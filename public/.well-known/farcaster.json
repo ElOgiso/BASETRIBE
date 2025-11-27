@@ -1,0 +1,19 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjUyMDE1NywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweEMzZTU2NGY2N0EyYjZCRDYzNjFjNTU3MThjNjI2OEY5RWEzNzk2OUUifQ",
+    "payload": "eyJkb21haW4iOiJiYXNldHJpYmUudmVyY2VsLmFwcCJ9",
+    "signature": "tLGi3i7plIuRySzbHsDv+MM8dtCr6zx973JBIrvm1xR9hNjXj2u6wvPpCDVNIN/Tn9RWbpe6wdRya0MeUm/MBxw="
+  },
+  "frame": {
+    "version": "1",
+    "name": "BaseTribe",
+    "subtitle": "The Viral Engine of Base",
+    "description": "We connect creators, suppoters, and communities who wants to see you rise on the base leaderboard, and earn rewards for participating. -Post, engage, clumb, earn, get rewards and repeat.",
+    "iconUrl": "https://basetribe.xyz/favicon.ico",
+    "homeUrl": "https://basetribe.xyz/",
+    "imageUrl": "https://basetribe.xyz/og-image.png",
+    "buttonTitle": "Join Base Tribe",
+    "splashImageUrl": "https://basetribe.xyz/splash.png",
+    "splashBackgroundColor": "#0b1220"
+  }
+}

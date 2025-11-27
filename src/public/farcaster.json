@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjExNjgxMDksInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMCJ9",
+    "payload": "eyJkb21haW4iOiJ5b3VyLWRvbWFpbi5jb20ifQ",
+    "signature": "MHgwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMA"
+  },
+  "miniapp": {
+    "version": "1.0.0",
+    "name": "BaseTribe Engagement",
+    "iconUrl": "https://your-domain.com/icon.png",
+    "homeUrl": "https://your-domain.com",
+    "imageUrl": "https://your-domain.com/preview.png",
+    "buttonTitle": "Open BaseTribe",
+    "splashImageUrl": "https://your-domain.com/splash.png",
+    "splashBackgroundColor": "#001F3F",
+    "webhookUrl": "https://api.neynar.com/f/app/c0ba9872-e675-4a3f-944d-8b1331d0a471/event"
+  }
+}
