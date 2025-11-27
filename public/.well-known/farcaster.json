@@ -8,12 +8,32 @@
     "version": "1",
     "name": "BaseTribe",
     "subtitle": "The Viral Engine of Base",
-    "description": "We connect creators, suppoters, and communities who wants to see you rise on the base leaderboard, and earn rewards for participating. -Post, engage, clumb, earn, get rewards and repeat.",
+    "description": "Post, engage, climb, earn, get rewards and repeat.",
     "iconUrl": "https://basetribe.xyz/favicon.ico",
     "homeUrl": "https://basetribe.xyz/",
     "imageUrl": "https://basetribe.xyz/og-image.png",
     "buttonTitle": "Join Base Tribe",
     "splashImageUrl": "https://basetribe.xyz/splash.png",
-    "splashBackgroundColor": "#0b1220"
-  }
+    "splashBackgroundColor": "#ffffff",
+    "webhookUrl": "https://basetribe.vercel.app/api/webhook"
+  },
+  "primaryCategory": "social",
+  "tags": [
+    "base",
+    "tribe",
+    "community",
+    "social"
+  ],
+  "description": "Post, engage, climb, earn, get rewards and repeat.",
+  "tagline": "The Viral Engine of Base",
+  "heroImageUrl": "https://basetribe.vercel.app/og-image.png",
+  "screenshotUrls": [
+    "https://basetribe.vercel.app/screenshot1.png",
+    "https://basetribe.vercel.app/screenshot2.png",
+    "https://basetribe.vercel.app/screenshot3.png"
+  ],
+  "ogTitle": "BaseTribe",
+  "ogDescription": "Post, engage, climb, earn, get rewards and repeat.",
+  "ogImageUrl": "https://basetribe.vercel.app/og-image.png",
+  "noindex": false
 }
