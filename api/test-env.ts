@@ -18,7 +18,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   // Check which environment variables are set (without exposing values)
   const envStatus = {
-    // Neynar API (Farcaster integration)
+    // Neynar API (Farcaster integration) - Support both variable names
+    NEYNAR_API_KEY: !!process.env.NEYNAR_API_KEY,
     NEYNAR_CLIENT_ID: !!process.env.NEYNAR_CLIENT_ID,
     NEYNAR_FID: !!process.env.NEYNAR_FID,
     NEYNAR_SIGNER_UUID: !!process.env.NEYNAR_SIGNER_UUID,
@@ -47,13 +48,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   };
 
   // Check if Neynar API key is valid by testing a simple call
+  // Support both NEYNAR_API_KEY and NEYNAR_CLIENT_ID
+  const NEYNAR_KEY = process.env.NEYNAR_API_KEY || process.env.NEYNAR_CLIENT_ID;
   let neynarApiTest = 'not_tested';
-  if (process.env.NEYNAR_CLIENT_ID) {
+  if (NEYNAR_KEY) {
     try {
       const testResponse = await fetch('https://api.neynar.com/v2/farcaster/user/bulk?fids=3', {
         headers: {
           'accept': 'application/json',
-          'x-api-key': process.env.NEYNAR_CLIENT_ID,
+          'x-api-key': NEYNAR_KEY,
         },
       });
       

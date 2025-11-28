@@ -21,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     method: req.method,
     action: req.query.action,
     params: req.query,
-    hasNeynarKey: !!process.env.NEYNAR_CLIENT_ID,
+    hasNeynarKey: !!(process.env.NEYNAR_API_KEY || process.env.NEYNAR_CLIENT_ID),
   });
 
   const { action } = req.query;
@@ -55,11 +55,12 @@ async function getFidFromWallet(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Wallet address required' });
   }
 
-  const NEYNAR_CLIENT_ID = process.env.NEYNAR_CLIENT_ID;
+  // Support both NEYNAR_API_KEY and NEYNAR_CLIENT_ID (they're the same thing)
+  const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || process.env.NEYNAR_CLIENT_ID;
 
-  if (!NEYNAR_CLIENT_ID) {
-    console.error('[getFidFromWallet] NEYNAR_CLIENT_ID not configured in environment');
-    return res.status(500).json({ error: 'Neynar client ID not configured' });
+  if (!NEYNAR_API_KEY) {
+    console.error('[getFidFromWallet] NEYNAR_API_KEY or NEYNAR_CLIENT_ID not configured in environment');
+    return res.status(500).json({ error: 'Neynar API key not configured' });
   }
 
   try {
@@ -69,7 +70,7 @@ async function getFidFromWallet(req: VercelRequest, res: VercelResponse) {
     const response = await fetch(url, {
       headers: {
         'accept': 'application/json',
-        'x-api-key': NEYNAR_CLIENT_ID,
+        'x-api-key': NEYNAR_API_KEY,
       },
     });
 
@@ -117,11 +118,12 @@ async function getUserProfile(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'FID required' });
   }
 
-  const NEYNAR_CLIENT_ID = process.env.NEYNAR_CLIENT_ID;
+  // Support both NEYNAR_API_KEY and NEYNAR_CLIENT_ID (they're the same thing)
+  const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || process.env.NEYNAR_CLIENT_ID;
 
-  if (!NEYNAR_CLIENT_ID) {
-    console.error('[getUserProfile] NEYNAR_CLIENT_ID not configured in environment');
-    return res.status(500).json({ error: 'Neynar client ID not configured' });
+  if (!NEYNAR_API_KEY) {
+    console.error('[getUserProfile] NEYNAR_API_KEY or NEYNAR_CLIENT_ID not configured in environment');
+    return res.status(500).json({ error: 'Neynar API key not configured' });
   }
 
   try {
@@ -131,7 +133,7 @@ async function getUserProfile(req: VercelRequest, res: VercelResponse) {
     const response = await fetch(url, {
       headers: {
         'accept': 'application/json',
-        'x-api-key': NEYNAR_CLIENT_ID,
+        'x-api-key': NEYNAR_API_KEY,
       },
     });
 
