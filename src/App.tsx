@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import sdk from '@farcaster/frame-sdk';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
@@ -35,10 +36,10 @@ import { connectWallet, getAccounts } from './lib/wallet';
 import { copyToClipboard } from './lib/clipboard';
 import { fetchFidFromWallet, getClaimableBalance, claimTokens, claimJesseTokens, claimUSDC } from './lib/claiming';
 import type { UserData, LeaderboardEntry } from './lib/types';
-import baseTribeLogo from 'figma:asset/544e4e31614cc37ee4c9bee294a3a4caa97fa062.png';
-import qrCodeImage from 'figma:asset/85fcf9bf9f7bde187263912c5771705ebf9c02f6.png';
-import donationBackground from 'figma:asset/12e573eb03a02b9aee1c6e4305222ae6ec6d1354.png';
-import tribeBanner from 'figma:asset/6fb1ba564aa36eea5b5df9921f96cc2c234bf993.png';
+import baseTribeLogo from './assets/logo.png';
+import qrCodeImage from './assets/qrcode.png';
+import donationBackground from './assets/qrbackground.png';
+import tribeBanner from './assets/meetthetribe.png';
 
 // Components
 import { TokenScroller } from './components/TokenScroller';
@@ -63,6 +64,17 @@ import { SessionProgressBlock } from './components/SessionProgressBlock';
 import { RainingSeasonOverlay } from './components/RainingSeasonOverlay';
 
 export default function App() {
+  // ✅ SDK READY SIGNAL
+  useEffect(() => {
+    const load = async () => {
+      try {
+        await sdk.actions.ready();
+      } catch (err) {
+        console.error("SDK Ready Error:", err);
+      }
+    };
+    load();
+  }, []);
   const [address, setAddress] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
