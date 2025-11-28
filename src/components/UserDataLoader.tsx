@@ -37,18 +37,28 @@ export function UserDataLoader({ onUserDataLoaded, onMembershipStatus }: UserDat
     try {
       console.log('🔍 Step 1: Fetching FID for wallet address:', address);
 
-      // Step 1: Get FID from wallet address via Neynar API
+      // Step 1: Get FID from wallet address via serverless Neynar API
+      // ✅ SECURE: API key stays on server
       const fidResponse = await fetch(
-        `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${address}`,
+        `/api/neynar?action=getFidFromWallet&wallet=${address}`,
         {
+          method: 'GET',
           headers: {
-            'accept': 'application/json',
-            'api_key': CONFIG.FARCASTER_API_KEY,
+            'Content-Type': 'application/json',
           },
         }
       );
 
       if (!fidResponse.ok) {
+        if (fidResponse.status === 404) {
+          console.warn('⚠️ No Farcaster account found for wallet:', address);
+          setError('No Farcaster account linked to this wallet');
+          onUserDataLoaded(null, null);
+          onMembershipStatus(false);
+          setLoading(false);
+          return;
+        }
+        
         console.warn('⚠️ Failed to fetch FID from Neynar');
         setError('Could not verify Farcaster account');
         onUserDataLoaded(null, null);
@@ -58,10 +68,9 @@ export function UserDataLoader({ onUserDataLoaded, onMembershipStatus }: UserDat
       }
 
       const fidData = await fidResponse.json();
-      const userAddressData = fidData[address.toLowerCase()];
-
-      if (!userAddressData || userAddressData.length === 0) {
-        console.warn('⚠️ No Farcaster account found for wallet:', address);
+      
+      if (!fidData.fid) {
+        console.warn('⚠️ No FID returned from API');
         setError('No Farcaster account linked to this wallet');
         onUserDataLoaded(null, null);
         onMembershipStatus(false);
@@ -69,7 +78,7 @@ export function UserDataLoader({ onUserDataLoaded, onMembershipStatus }: UserDat
         return;
       }
 
-      const fid = String(userAddressData[0].fid);
+      const fid = String(fidData.fid);
       console.log('✅ Step 2: FID found:', fid);
 
       // Step 2: Fetch user data from Google Sheets using FID
