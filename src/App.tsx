@@ -381,9 +381,10 @@ export default function App() {
         // ✅ Update Google Sheets with new balance
         if (fid && result.txHash) {
           try {
-            updateBTribeBalance(fid, newBalance, userData.btribe_balance, result.txHash)
-  .then(() => console.log('✅ $BTRIBE balance updated in Google Sheets'))
-  .catch((updateError) => console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError));
+            await updateBTribeBalance(fid, newBalance, userData.btribe_balance, result.txHash);
+            console.log('✅ $BTRIBE balance updated in Google Sheets');
+          } catch (updateError) {
+            console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError);
           }
         }
       } else {
@@ -439,9 +440,10 @@ export default function App() {
         // ✅ Update Google Sheets with new balance
         if (userData.farcaster_fid && result.txHash) {
           try {
-            updateJesseBalance(userData.farcaster_fid, result.newBalance!, userData.jesse_balance, result.txHash)
-  .then(() => console.log('✅ $JESSE balance updated in Google Sheets'))
-  .catch((updateError) => console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError));
+            await updateJesseBalance(userData.farcaster_fid, result.newBalance!, userData.jesse_balance, result.txHash);
+            console.log('✅ $JESSE balance updated in Google Sheets');
+          } catch (updateError) {
+            console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError);
           }
         }
       } else {
@@ -497,9 +499,10 @@ export default function App() {
         // ✅ Update Google Sheets with new balance
         if (userData.farcaster_fid && result.txHash) {
           try {
-           updateUSDCBalance(userData.farcaster_fid, result.newBalance!, userData.usdc_claims, result.txHash)
-  .then(() => console.log('✅ USDC balance updated in Google Sheets'))
-  .catch((updateError) => console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError));
+            await updateUSDCBalance(userData.farcaster_fid, result.newBalance!, userData.usdc_claims, result.txHash);
+            console.log('✅ USDC balance updated in Google Sheets');
+          } catch (updateError) {
+            console.error('⚠️ Failed to update Google Sheets (claim still succeeded):', updateError);
           }
         }
       } else {
