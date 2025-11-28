@@ -249,12 +249,13 @@ export async function fetchFarcasterProfile(fid: string): Promise<{
   username: string;
 } | null> {
   try {
+    // Use our serverless API route instead of direct Neynar call
     const response = await fetch(
-      `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`,
+      `${CONFIG.API.NEYNAR}?action=getUserProfile&fid=${fid}`,
       {
+        method: 'GET',
         headers: {
-          'accept': 'application/json',
-          'api_key': CONFIG.FARCASTER_API_KEY,
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -262,14 +263,13 @@ export async function fetchFarcasterProfile(fid: string): Promise<{
     if (!response.ok) return null;
 
     const data = await response.json();
-    const user = data.users?.[0];
 
-    if (!user) return null;
+    if (!data.pfpUrl) return null;
 
     return {
-      pfpUrl: user.pfp_url || '',
-      displayName: user.display_name || user.username || '',
-      username: user.username || '',
+      pfpUrl: data.pfpUrl || '',
+      displayName: data.displayName || data.username || '',
+      username: data.username || '',
     };
   } catch (error) {
     console.error('Error fetching Farcaster profile:', error);

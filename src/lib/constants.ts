@@ -1,5 +1,5 @@
-// BaseTribe Configuration
-// All configuration values for the app
+// BaseTribe Configuration - Production Ready
+// Client-side configuration with NO sensitive keys
 
 // ============================================
 // GOOGLE SHEETS COLUMN MAPPING (Production)
@@ -31,35 +31,19 @@
 // Column X (23) = completed_tasks
 // ============================================
 
-// Google Sheets Configuration
+// Public Configuration (Safe to expose to client)
 export const CONFIG = {
-  SHEET_ID: import.meta.env.VITE_SHEET_ID,
-  NEYNAR_API_KEY: import.meta.env.VITE_NEYNAR_API_KEY,
-  FARCASTER_API_KEY: import.meta.env.VITE_NEYNAR_API_KEY, // Uses same key
+  // Google Sheets ID (publicly readable)
+  SHEET_ID: '1P9pEdiosAkkqRyb7a8fSGU4JlO6fQJEpQ2RJrhjPIFM',
   
-  // 🎯 NEYNAR MINIAPP CREDENTIALS
-  NEYNAR_CLIENT_ID: import.meta.env.VITE_NEYNAR_CLIENT_ID,
-  NEYNAR_FID: import.meta.env.VITE_NEYNAR_FID,
-  NEYNAR_SIGNER_UUID: import.meta.env.VITE_NEYNAR_SIGNER_UUID,
+  // Google Apps Script URLs (publicly accessible endpoints)
+  RAID_MASTER_URL: 'https://script.google.com/macros/s/AKfycbzJ8k2e2j95KkEv_BeaWkBp4bugoHOKF0xbd4Oz4FKCcFYumyYVIeUywEOCkzU36SMp/exec',
+  ENGAGEMENT_BOT_URL: 'https://script.google.com/macros/s/AKfycbxZPexekalZaea1hH-l0DzKGG4e3Kxcjio2I9lUVImXE0NWET1YCc2Hdd61-X8UrpqhZg/exec',
   
-  // Telegram Configuration
-  TELEGRAM_BOT_TOKEN: import.meta.env.VITE_TELEGRAM_BOT_TOKEN,
-  TELEGRAM_RAID_MASTER_BOT_TOKEN: import.meta.env.VITE_TELEGRAM_BOT_TOKEN,
-  TELEGRAM_CHAT_ID: import.meta.env.VITE_TELEGRAM_CHAT_ID,
-  
-  // Google Apps Script URLs
-  RAID_MASTER_URL: import.meta.env.VITE_RAID_MASTER_URL,
-  ENGAGEMENT_BOT_URL: import.meta.env.VITE_ENGAGEMENT_BOT_URL,
-  
-  // Blockchain Configuration (Base Mainnet)
+  // Blockchain Configuration (Base Mainnet - Public addresses)
   BTRIBE_TOKEN_ADDRESS: '0xa58d90ec74c4978a161ffaba582f159b32b2d6d6',
   JESSE_TOKEN_ADDRESS: '0x50f88fe97f72cd3e75b9eb4f747f59bceba80d59',
   MANIFOLD_CONTRACT: '0x6d70517b4bb4921b6fe0b131d62415332db1b831',
-  RPC_PROVIDER_URL: import.meta.env.VITE_RPC_PROVIDER_URL,
-  
-  // Manifold OAuth Credentials
-  MANIFOLD_CLIENT_ID: import.meta.env.VITE_MANIFOLD_CLIENT_ID,
-  MANIFOLD_CLIENT_SECRET: import.meta.env.VITE_MANIFOLD_CLIENT_SECRET,
   
   // Raid Master Configuration
   RAID_MASTER_DAILY_REWARD_TOPIC_ID: 1519,
@@ -68,7 +52,13 @@ export const CONFIG = {
   CHAIN_ID: 8453, // Base Mainnet
   
   // App URL (for notifications)
-  APP_URL: typeof window !== 'undefined' ? window.location.origin : 'https://your-domain.com',
+  APP_URL: typeof window !== 'undefined' ? window.location.origin : 'https://basetribe.vercel.app',
+  
+  // API Routes (Serverless functions that handle sensitive operations)
+  API: {
+    NEYNAR: '/api/neynar',
+    MANIFOLD: '/api/manifold',
+  },
 } as const;
 
 // Session Times (WAT timezone - Africa/Lagos)
