@@ -186,19 +186,22 @@ export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
 
     console.log(`✅ Leaderboard loaded: ${leaderboardData.length} users`);
     
-    // Fetch Farcaster profile data for all users (batch request)
+    // Fetch Farcaster profile data for all users (batch request via serverless API)
     if (leaderboardData.length > 0) {
       try {
-        // Collect all FIDs and batch fetch (Neynar supports up to 100 FIDs per request)
+        console.log(`🔄 Fetching profile data for ${leaderboardData.length} users...`);
+        
+        // Collect all FIDs (Neynar supports up to 100 FIDs per request)
         const fids = leaderboardData.map(entry => entry.farcaster_fid).slice(0, 100);
         const fidsParam = fids.join(',');
         
+        // Use serverless API route to fetch profiles (keeps API key secure)
         const profileResponse = await fetch(
-          `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fidsParam}`,
+          `/api/neynar?action=getUserProfiles&fids=${fidsParam}`,
           {
+            method: 'GET',
             headers: {
-              'accept': 'application/json',
-              'api_key': CONFIG.FARCASTER_API_KEY,
+              'Content-Type': 'application/json',
             },
           }
         );
@@ -206,6 +209,8 @@ export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
         if (profileResponse.ok) {
           const profileData = await profileResponse.json();
           const users = profileData.users || [];
+          
+          console.log(`✅ Received profile data for ${users.length} users from Neynar`);
           
           // Map profile data to leaderboard entries
           const profileMap = new Map(
@@ -224,10 +229,13 @@ export async function fetchLeaderboard(): Promise<LeaderboardEntry[]> {
             if (profile) {
               entry.profile_image = profile.pfp_url;
               entry.display_name = profile.display_name;
+              console.log(`✅ Updated profile for @${entry.farcaster_username}: ${entry.display_name}`);
             }
           });
           
-          console.log(`✅ Fetched profile data for ${users.length} users`);
+          console.log(`✅ Updated ${users.length} leaderboard entries with profile images`);
+        } else {
+          console.warn(`⚠️ Profile fetch returned status ${profileResponse.status}`);
         }
       } catch (profileError) {
         console.warn('⚠️ Could not fetch profile data, continuing without images:', profileError);

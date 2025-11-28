@@ -32,6 +32,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return await getFidFromWallet(req, res);
       case 'getUserProfile':
         return await getUserProfile(req, res);
+      case 'getUserProfiles':
+        return await getUserProfiles(req, res);
       default:
         console.error('[Neynar API] Invalid action:', action);
         return res.status(400).json({ error: 'Invalid action', received: action });
@@ -165,6 +167,57 @@ async function getUserProfile(req: VercelRequest, res: VercelResponse) {
     console.error('[getUserProfile] Exception:', error);
     return res.status(500).json({ 
       error: 'Failed to fetch user profile',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+}
+
+async function getUserProfiles(req: VercelRequest, res: VercelResponse) {
+  const { fids } = req.query;
+
+  console.log('[getUserProfiles] Called with FIDs:', fids);
+
+  if (!fids) {
+    console.error('[getUserProfiles] No FIDs provided');
+    return res.status(400).json({ error: 'FIDs required (comma-separated)' });
+  }
+
+  // Support both NEYNAR_API_KEY and NEYNAR_CLIENT_ID (they're the same thing)
+  const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY || process.env.NEYNAR_CLIENT_ID;
+
+  if (!NEYNAR_API_KEY) {
+    console.error('[getUserProfiles] NEYNAR_API_KEY or NEYNAR_CLIENT_ID not configured in environment');
+    return res.status(500).json({ error: 'Neynar API key not configured' });
+  }
+
+  try {
+    const url = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fids}`;
+    console.log('[getUserProfiles] Calling Neynar API:', url);
+    
+    const response = await fetch(url, {
+      headers: {
+        'accept': 'application/json',
+        'x-api-key': NEYNAR_API_KEY,
+      },
+    });
+
+    console.log('[getUserProfiles] Neynar API response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[getUserProfiles] Neynar API error:', response.status, errorText);
+      throw new Error(`Neynar API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('[getUserProfiles] Neynar API returned data for', data.users?.length || 0, 'users');
+    
+    // Return the full response (contains users array)
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('[getUserProfiles] Exception:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch user profiles',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
