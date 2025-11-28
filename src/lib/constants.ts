@@ -31,14 +31,24 @@
 // Column X (23) = completed_tasks
 // ============================================
 
+// Helper to get environment variable (works in both client and server)
+const getEnvVar = (key: string, defaultValue?: string): string => {
+  if (typeof process !== 'undefined' && process.env) {
+    // Server-side (Vercel serverless)
+    return process.env[key] || defaultValue || '';
+  }
+  return defaultValue || '';
+};
+
 // Public Configuration (Safe to expose to client)
 export const CONFIG = {
   // Google Sheets ID (publicly readable)
   SHEET_ID: '1P9pEdiosAkkqRyb7a8fSGU4JlO6fQJEpQ2RJrhjPIFM',
   
   // Google Apps Script URLs (publicly accessible endpoints)
-  RAID_MASTER_URL: 'https://script.google.com/macros/s/AKfycbzJ8k2e2j95KkEv_BeaWkBp4bugoHOKF0xbd4Oz4FKCcFYumyYVIeUywEOCkzU36SMp/exec',
-  ENGAGEMENT_BOT_URL: 'https://script.google.com/macros/s/AKfycbxZPexekalZaea1hH-l0DzKGG4e3Kxcjio2I9lUVImXE0NWET1YCc2Hdd61-X8UrpqhZg/exec',
+  // Can be overridden by environment variables if needed
+  RAID_MASTER_URL: getEnvVar('RAID_MASTER_URL', 'https://script.google.com/macros/s/AKfycbzJ8k2e2j95KkEv_BeaWkBp4bugoHOKF0xbd4Oz4FKCcFYumyYVIeUywEOCkzU36SMp/exec'),
+  ENGAGEMENT_BOT_URL: getEnvVar('ENGAGEMENT_BOT_URL', 'https://script.google.com/macros/s/AKfycbxZPexekalZaea1hH-l0DzKGG4e3Kxcjio2I9lUVImXE0NWET1YCc2Hdd61-X8UrpqhZg/exec'),
   
   // Blockchain Configuration (Base Mainnet - Public addresses)
   BTRIBE_TOKEN_ADDRESS: '0xa58d90ec74c4978a161ffaba582f159b32b2d6d6',
@@ -58,6 +68,7 @@ export const CONFIG = {
   API: {
     NEYNAR: '/api/neynar',
     MANIFOLD: '/api/manifold',
+    CLAIM: '/api/claim',
   },
 } as const;
 

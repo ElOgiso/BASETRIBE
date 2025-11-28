@@ -16,6 +16,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
+  // Log all incoming requests for debugging
+  console.log('[Neynar API] Request:', {
+    method: req.method,
+    action: req.query.action,
+    params: req.query,
+    hasNeynarKey: !!process.env.NEYNAR_CLIENT_ID,
+  });
+
   const { action } = req.query;
 
   try {
@@ -25,29 +33,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case 'getUserProfile':
         return await getUserProfile(req, res);
       default:
-        return res.status(400).json({ error: 'Invalid action' });
+        console.error('[Neynar API] Invalid action:', action);
+        return res.status(400).json({ error: 'Invalid action', received: action });
     }
   } catch (error) {
-    console.error('Neynar API Error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    console.error('[Neynar API] Unhandled Error:', error);
+    return res.status(500).json({ 
+      error: 'Internal server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
 
 async function getFidFromWallet(req: VercelRequest, res: VercelResponse) {
   const { wallet } = req.query;
 
+  console.log('[getFidFromWallet] Called with wallet:', wallet);
+
   if (!wallet) {
+    console.error('[getFidFromWallet] No wallet address provided');
     return res.status(400).json({ error: 'Wallet address required' });
   }
 
   const NEYNAR_CLIENT_ID = process.env.NEYNAR_CLIENT_ID;
 
   if (!NEYNAR_CLIENT_ID) {
+    console.error('[getFidFromWallet] NEYNAR_CLIENT_ID not configured in environment');
     return res.status(500).json({ error: 'Neynar client ID not configured' });
   }
 
   try {
     const url = `https://api.neynar.com/v2/farcaster/user/bulk-by-address?addresses=${wallet}`;
+    console.log('[getFidFromWallet] Calling Neynar API:', url);
     
     const response = await fetch(url, {
       headers: {
@@ -56,41 +73,60 @@ async function getFidFromWallet(req: VercelRequest, res: VercelResponse) {
       },
     });
 
+    console.log('[getFidFromWallet] Neynar API response status:', response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[getFidFromWallet] Neynar API error:', response.status, errorText);
       throw new Error(`Neynar API error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('[getFidFromWallet] Neynar API data:', JSON.stringify(data).substring(0, 200));
     
     if (data && Object.keys(data).length > 0) {
-      const walletData = data[wallet.toLowerCase()];
+      const walletLower = (wallet as string).toLowerCase();
+      const walletData = data[walletLower];
+      console.log('[getFidFromWallet] Wallet data for', walletLower, ':', walletData);
+      
       if (walletData && walletData.length > 0) {
-        return res.status(200).json({ fid: walletData[0].fid.toString() });
+        const fid = walletData[0].fid.toString();
+        console.log('[getFidFromWallet] ✅ FID found:', fid);
+        return res.status(200).json({ fid });
       }
     }
 
+    console.log('[getFidFromWallet] No FID found for wallet');
     return res.status(404).json({ error: 'FID not found for wallet' });
   } catch (error) {
-    console.error('getFidFromWallet error:', error);
-    return res.status(500).json({ error: 'Failed to fetch FID' });
+    console.error('[getFidFromWallet] Exception:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch FID',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
 
 async function getUserProfile(req: VercelRequest, res: VercelResponse) {
   const { fid } = req.query;
 
+  console.log('[getUserProfile] Called with FID:', fid);
+
   if (!fid) {
+    console.error('[getUserProfile] No FID provided');
     return res.status(400).json({ error: 'FID required' });
   }
 
   const NEYNAR_CLIENT_ID = process.env.NEYNAR_CLIENT_ID;
 
   if (!NEYNAR_CLIENT_ID) {
+    console.error('[getUserProfile] NEYNAR_CLIENT_ID not configured in environment');
     return res.status(500).json({ error: 'Neynar client ID not configured' });
   }
 
   try {
     const url = `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`;
+    console.log('[getUserProfile] Calling Neynar API:', url);
     
     const response = await fetch(url, {
       headers: {
@@ -99,24 +135,35 @@ async function getUserProfile(req: VercelRequest, res: VercelResponse) {
       },
     });
 
+    console.log('[getUserProfile] Neynar API response status:', response.status);
+
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[getUserProfile] Neynar API error:', response.status, errorText);
       throw new Error(`Neynar API error: ${response.status}`);
     }
 
     const data = await response.json();
+    console.log('[getUserProfile] Neynar API data received for FID:', fid);
     
     if (data.users && data.users.length > 0) {
       const user = data.users[0];
-      return res.status(200).json({
+      const profile = {
         pfpUrl: user.pfp_url,
         displayName: user.display_name,
         username: user.username,
-      });
+      };
+      console.log('[getUserProfile] ✅ Profile found:', profile.username);
+      return res.status(200).json(profile);
     }
 
+    console.log('[getUserProfile] No user found for FID');
     return res.status(404).json({ error: 'User not found' });
   } catch (error) {
-    console.error('getUserProfile error:', error);
-    return res.status(500).json({ error: 'Failed to fetch user profile' });
+    console.error('[getUserProfile] Exception:', error);
+    return res.status(500).json({ 
+      error: 'Failed to fetch user profile',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 }
