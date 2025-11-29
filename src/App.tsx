@@ -5,7 +5,9 @@ import './styles/globals.css';
 import { useState, useEffect } from 'react';
 import sdk from '@farcaster/frame-sdk';
 import { OnchainKitProvider } from '@coinbase/onchainkit'; 
-import { base } from 'viem/chains';
+import { base } from 'wagmi/chains';
+import { WagmiProvider, createConfig, http } from 'wagmi';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
@@ -70,6 +72,14 @@ import { WelcomeBanner } from './components/WelcomeBanner';
 import { RainingSeasonOverlay } from './components/RainingSeasonOverlay';
 import { ActivityFeed } from './components/ActivityFeed';
 
+const config = createConfig({
+  chains: [base],
+  transports: {
+    [base.id]: http(),
+  },
+});
+
+const queryClient = new QueryClient();
 export default function App() {
   // ✅ SDK READY SIGNAL
   useEffect(() => {
@@ -602,12 +612,13 @@ export default function App() {
     }
   }, [notification]);
 
-  return (
-    // ✅ ADD START TAG HERE
-    <OnchainKitProvider 
-      apiKey={import.meta.env.VITE_CDP_API_KEY} 
-      chain={base}
-    >
+ return (
+  <WagmiProvider config={config}>
+    <QueryClientProvider client={queryClient}>
+      <OnchainKitProvider 
+        apiKey={import.meta.env.VITE_CDP_API_KEY} 
+        chain={base}
+      >
       <div className="min-h-screen bg-gradient-to-b from-[#001F3F] via-[#002855] to-[#001F3F] overflow-x-hidden">
         {/* Welcome Banner - Shows on first visit */}
         <WelcomeBanner
@@ -1150,15 +1161,16 @@ export default function App() {
           </div>
 
           {/* Footer Credits */}
-          <div className="pb-8 text-center">
-            <p className="text-white/40 text-sm">
-              Built on Base by Base Tribe.
-            </p>
+                <div className="pb-8 text-center">
+                  <p className="text-white/40 text-sm">
+                    Built on Base by Base Tribe.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      
-    </div>
-    </OnchainKitProvider> // ✅ ADD END TAG HERE
+        </OnchainKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
