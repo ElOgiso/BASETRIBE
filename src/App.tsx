@@ -4,6 +4,8 @@
 import './styles/globals.css';
 import { useState, useEffect } from 'react';
 import sdk from '@farcaster/frame-sdk';
+import { OnchainKitProvider } from '@coinbase/onchainkit';
+import { base } from 'viem/chains';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs';
 import { Button } from './components/ui/button';
 import { Card } from './components/ui/card';
@@ -601,9 +603,14 @@ export default function App() {
   }, [notification]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#001F3F] via-[#002855] to-[#001F3F] overflow-x-hidden">
-      {/* Welcome Banner - Shows on first visit */}
-      <WelcomeBanner
+    // ✅ ADD START TAG HERE
+    <OnchainKitProvider 
+      apiKey={import.meta.env.VITE_CDP_API_KEY} 
+      chain={base}
+    >
+      <div className="min-h-screen bg-gradient-to-b from-[#001F3F] via-[#002855] to-[#001F3F] overflow-x-hidden">
+        {/* Welcome Banner - Shows on first visit */}
+        <WelcomeBanner
         userData={userData}
         isVisible={showWelcomeBanner}
         onClose={() => {
@@ -1151,7 +1158,7 @@ export default function App() {
         </div>
       </div>
       
-
     </div>
+    </OnchainKitProvider> // ✅ ADD END TAG HERE
   );
 }
